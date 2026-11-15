@@ -58,33 +58,33 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
   const features = [
     {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A6FA5" strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><line x1="9" y1="13" x2="15" y2="13" /><line x1="9" y1="17" x2="13" y2="17" /></svg>,
-      title: 'AI 규정 자동 추출',
-      desc: 'PDF·DOCX 규정책을 업로드하면 AI가 핵심 규정을 즉시 파악하고 구조화합니다.',
+      title: '증빙 기반 양식 자동 작성',
+      desc: '증빙에서 읽은 내용으로 DOCX·XLSX 양식의 빈칸을 채우고, 사업명을 바탕으로 서술형 항목도 작성합니다.',
     },
     {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A6FA5" strokeWidth="1.5" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M9 21V9" /></svg>,
       title: 'OCR 영수증 자동 인식',
-      desc: '영수증 사진을 업로드하면 가맹점명·금액·날짜를 자동으로 인식해 양식에 채웁니다.',
+      desc: '영수증 사진을 업로드하면 가맹점명·금액·날짜를 인식하고, 카드·현금 결제 유형에 맞는 양식을 추천합니다.',
     },
     {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A6FA5" strokeWidth="1.5" strokeLinecap="round"><path d="M9 11l3 3L22 4" /><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" /></svg>,
-      title: '규정 준수 자동 검사',
-      desc: '숙박비·교통비·식비 등 항목별로 내부 규정 위반 여부를 실시간으로 감지합니다.',
+      title: '필수 항목 검사',
+      desc: '자동으로 채워지지 않은 필수 항목을 표시하고, 직접 입력하면 바로 다시 검사합니다.',
     },
     {
       icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A6FA5" strokeWidth="1.5" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" /><polyline points="14 2 14 8 20 8" /><path d="M12 18v-6M9 15l3 3 3-3" /></svg>,
-      title: 'PDF 원클릭 저장·제출',
-      desc: '완성된 결의서를 PDF로 즉시 저장하고, 결재 라인에 바로 제출할 수 있습니다.',
+      title: '다단계 결재',
+      desc: '완성된 문서를 내려받고, 역할 순서(예: 부원 → 총무부장 → 회장)대로 결재를 요청·승인합니다.',
     },
   ];
 
   const steps = [
-    { n: '01', label: '규정 업로드',    desc: '내부 규정 문서 업로드' },
-    { n: '02', label: 'AI 규정 추출',   desc: '규정 자동 구조화' },
-    { n: '03', label: '증빙 업로드',    desc: '영수증 OCR 인식' },
+    { n: '01', label: '회칙·양식 등록', desc: '회칙 조항을 양식 설명에 반영' },
+    { n: '02', label: '증빙 업로드',    desc: '영수증 OCR 인식' },
+    { n: '03', label: '양식 추천',      desc: '카드·현금 유형별 추천' },
     { n: '04', label: '양식 자동 완성', desc: 'LLM 자동 입력' },
-    { n: '05', label: '규정 검사',      desc: '준수 여부 자동 판단' },
-    { n: '06', label: 'PDF 저장',       desc: '결재 라인 제출' },
+    { n: '05', label: '필수 항목 검사', desc: '누락 항목 표시' },
+    { n: '06', label: '다단계 결재',    desc: '역할 순서대로 승인' },
   ];
 
   return (
@@ -147,7 +147,7 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
             </Reveal>
             <Reveal delay={160}>
               <p style={{ fontSize: 15, color: '#5A6475', lineHeight: 1.7, margin: '0 0 36px', maxWidth: 420 }}>
-                규정 업로드부터 OCR 영수증 인식, 규정 준수 검사, PDF 저장까지 — 복잡한 결의 과정을 자동화합니다.
+                영수증 인식부터 양식 자동 작성, 필수 항목 검사, 다단계 결재까지 — 반복적인 결의 과정을 자동화합니다.
               </p>
             </Reveal>
             <Reveal delay={220}>
@@ -162,7 +162,7 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
             </Reveal>
             <Reveal delay={300}>
               <div style={{ display: 'flex', gap: 20, marginTop: 32, flexWrap: 'wrap' }}>
-                {['도입 기업 120+', '월 처리 결의서 8,000건', '평균 처리 시간 3분'].map(t => (
+                {['카드·현금 증빙 지원', 'DOCX·XLSX 양식 자동 작성', '역할 기반 다단계 결재'].map(t => (
                   <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                     <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4A6FA5' }} />
                     <span style={{ fontSize: 12, fontWeight: 600, color: '#5A6475' }}>{t}</span>
@@ -185,14 +185,14 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
               </div>
               <div style={{ background: '#DDE3EC', padding: '12px 16px', position: 'relative', overflow: 'hidden' }}>
                 <div style={{ position: 'absolute', right: -20, bottom: -30, width: 120, height: 120, background: '#C8D6E8', opacity: 0.4, borderRadius: '50%' }} />
-                <div style={{ fontSize: 8, fontWeight: 700, color: '#2D3F63', background: '#C8D6E8', padding: '2px 7px', borderRadius: 100, display: 'inline-block', marginBottom: 5 }}>STEP 5 · 규정 검사</div>
-                <div style={{ fontSize: 13, fontWeight: 900, color: '#1C2B4A' }}>규정 준수 검사 결과</div>
+                <div style={{ fontSize: 8, fontWeight: 700, color: '#2D3F63', background: '#C8D6E8', padding: '2px 7px', borderRadius: 100, display: 'inline-block', marginBottom: 5 }}>STEP 5 · 필수 항목 검사</div>
+                <div style={{ fontSize: 13, fontWeight: 900, color: '#1C2B4A' }}>현금지출증빙서 검사 결과</div>
               </div>
               <div style={{ padding: '12px 14px' }}>
                 {[
-                  { label: '교통비 규정 통과', icon: '✓', bg: '#E8F5EE', c: '#3A8A5C', bc: '#E2E7EF', badge: '통과' },
-                  { label: '식비 한도 주의',   icon: '!', bg: '#FDF5E0', c: '#C08020', bc: '#C08020', badge: '주의' },
-                  { label: '숙박비 규정 위반', icon: '✗', bg: '#FDECEA', c: '#C8374A', bc: '#C8374A', badge: '위반' },
+                  { label: '증빙서류 연결됨',       icon: '✓', bg: '#E8F5EE', c: '#3A8A5C', bc: '#E2E7EF', badge: '완료' },
+                  { label: '금액·날짜 자동 입력',   icon: '✓', bg: '#E8F5EE', c: '#3A8A5C', bc: '#E2E7EF', badge: '완료' },
+                  { label: '수령인 연락처 미입력', icon: '✗', bg: '#FDECEA', c: '#C8374A', bc: '#C8374A', badge: '입력 필요' },
                 ].map(r => (
                   <div key={r.label} style={{ display: 'flex', gap: 8, padding: '7px 8px', background: 'white', borderRadius: 6, border: `1px solid ${r.bc}`, marginBottom: 6, alignItems: 'center' }}>
                     <div style={{ width: 16, height: 16, borderRadius: '50%', background: r.bg, color: r.c, fontSize: 8, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{r.icon}</div>
@@ -211,7 +211,7 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
         <Reveal style={{ textAlign: 'center', marginBottom: 48 }}>
           <div style={{ display: 'inline-block', background: '#EAF0F8', color: '#4A6FA5', fontSize: 10, fontWeight: 700, padding: '4px 12px', borderRadius: 100, letterSpacing: '0.5px', marginBottom: 14 }}>핵심 기능</div>
           <h2 style={{ fontSize: 30, fontWeight: 900, color: '#1C2B4A', letterSpacing: '-0.5px', margin: '0 0 12px' }}>복잡한 결의 프로세스를<br />처음부터 끝까지 자동화</h2>
-          <p style={{ fontSize: 14, color: '#5A6475', lineHeight: 1.6, margin: 0 }}>규정 검토부터 제출까지, 반복적인 업무를 AI가 대신합니다.</p>
+          <p style={{ fontSize: 14, color: '#5A6475', lineHeight: 1.6, margin: 0 }}>증빙 인식부터 결재까지, 반복적인 업무를 AI가 대신합니다.</p>
         </Reveal>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: 16 }}>
           {features.map((f, i) => (
@@ -232,7 +232,7 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
       <section style={{ padding: '0 40px 80px', maxWidth: 1100, margin: '0 auto' }}>
         <Reveal style={{ textAlign: 'center', marginBottom: 40 }}>
           <h2 style={{ fontSize: 26, fontWeight: 900, color: '#1C2B4A', letterSpacing: '-0.5px', margin: '0 0 10px' }}>6단계로 완성되는 결의서</h2>
-          <p style={{ fontSize: 13, color: '#8A96A8', margin: 0 }}>규정 업로드부터 PDF 제출까지 평균 3분</p>
+          <p style={{ fontSize: 13, color: '#8A96A8', margin: 0 }}>회칙·양식 등록부터 다단계 결재까지</p>
         </Reveal>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: 12 }}>
           {steps.map((s, i) => (
@@ -257,7 +257,7 @@ export default function LandingScreen({ onStart }: LandingScreenProps) {
         <Reveal style={{ maxWidth: 600, margin: '0 auto', textAlign: 'center', position: 'relative', zIndex: 1 }}>
           <h2 style={{ fontSize: 30, fontWeight: 900, color: 'white', letterSpacing: '-0.5px', margin: '0 0 14px' }}>지금 바로 시작하세요</h2>
           <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.6, margin: '0 0 32px' }}>
-            복잡한 설치 없이 바로 사용 가능합니다.<br />무료 체험 후 결정하세요.
+            복잡한 설치 없이 웹에서 바로 사용할 수 있습니다.
           </p>
           <button onClick={handleStart} style={{ fontFamily: 'var(--font-ui)', fontSize: 15, fontWeight: 700, borderRadius: 6, padding: '14px 40px', height: 52, border: 'none', background: 'white', color: '#1C2B4A', cursor: 'pointer', letterSpacing: '0.2px' }}>
             무료로 시작하기 →

@@ -405,7 +405,7 @@ export default function DocReviewScreen() {
               border: 'none', borderRadius: 10, padding: '10px 20px',
               fontSize: 13, fontWeight: 700, cursor: 'pointer', fontFamily: 'inherit',
             }}
-          >다음 → 규정 검토</button>
+          >다음 → 필수 항목 검사</button>
         </div>
       </div>
 

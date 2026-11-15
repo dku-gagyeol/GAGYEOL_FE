@@ -19,7 +19,7 @@ const STEP_TITLES: Record<number, string> = {
   1: 'STEP 1 · 증빙 자료 업로드',
   2: 'STEP 2 · 양식 추천',
   3: 'STEP 3 · 초안 확인·수정',
-  4: 'STEP 4 · 규정 검토',
+  4: 'STEP 4 · 필수 항목 검사',
   5: 'STEP 5 · 문서 저장',
 };
 

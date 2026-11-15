@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { getUserInfo } from '@/lib/auth';
 
@@ -24,7 +24,7 @@ export default function ComplianceScreen() {
   const [formName, setFormName] = useState('지출결의서');
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
-  const [checks, setChecks] = useState<CheckItem[]>([]);
+  const [hasEvidence, setHasEvidence] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('lastStep', '4');
@@ -35,6 +35,7 @@ export default function ComplianceScreen() {
     if (name) setFormName(name);
     // 증빙별 스냅샷 업데이트
     const evidenceId = localStorage.getItem('evidenceId');
+    setHasEvidence(!!evidenceId);
     if (evidenceId) {
       const existing = JSON.parse(localStorage.getItem(`eid_${evidenceId}`) ?? '{}');
       existing.lastStep = '4';
@@ -65,35 +66,22 @@ export default function ComplianceScreen() {
       });
     }
     setRows(merged);
-
-    const checkList: CheckItem[] = [];
-    const violationCount = merged.filter(r => r.violated).length;
-    if (violationCount > 0) {
-      checkList.push({
-        status: 'err',
-        title: `${violationCount}개 항목 입력 누락`,
-        desc: '빨간 테두리 항목을 클릭하여 입력하세요.',
-      });
-    }
-    checkList.push(
-      { status: 'ok', title: '증빙서류 첨부 완료', desc: '업로드된 증빙이 양식에 연결되었습니다.' },
-      { status: 'ok', title: '한도 규정 준수', desc: '항목별 한도 위반 사항이 없습니다.' },
-    );
-    if (violationCount === 0) {
-      checkList.push({
-        status: 'ok',
-        title: '모든 규정 검사 통과',
-        desc: '검토를 마쳤습니다. 다음 단계로 진행하세요.',
-      });
-    } else {
-      checkList.push({
-        status: 'warn',
-        title: '입력 보강 권장',
-        desc: '구체적인 거래처명·업무 내용을 보강하면 결재 통과율이 높아집니다.',
-      });
-    }
-    setChecks(checkList);
   }, []);
+
+  // 실제로 확인 가능한 항목만 검사: ① 필수 항목 입력 여부 ② 증빙서류 연결 여부
+  // (규정 위반 여부는 판정하지 않음 — 회칙은 양식 분석 단계에서 RAG로 참고만 함)
+  // 셀 편집 시 rows가 바뀌므로 검사 결과도 즉시 다시 계산된다.
+  const checks = useMemo<CheckItem[]>(() => {
+    const list: CheckItem[] = [];
+    const missingCount = rows.filter(r => r.violated).length;
+    list.push(missingCount > 0
+      ? { status: 'err', title: `필수 항목 ${missingCount}개 미입력`, desc: '빨간 테두리 항목을 클릭하여 입력하세요.' }
+      : { status: 'ok', title: '필수 항목 모두 입력됨', desc: '양식의 필수 항목이 모두 채워졌습니다.' });
+    list.push(hasEvidence
+      ? { status: 'ok', title: '증빙서류 연결됨', desc: '업로드한 증빙서류가 이 양식에 연결되어 있습니다.' }
+      : { status: 'err', title: '증빙서류 없음', desc: '증빙서류를 먼저 업로드해 주세요.' });
+    return list;
+  }, [rows, hasEvidence]);
 
   function startEdit(row: FieldRow) {
     setEditingKey(row.key);
@@ -293,7 +281,7 @@ export default function ComplianceScreen() {
           <div style={{
             fontSize: 10, fontWeight: 700, color: 'var(--gray4)',
             letterSpacing: '0.5px', textTransform: 'uppercase', marginBottom: 10,
-          }}>규정 검사</div>
+          }}>필수 항목 검사</div>
           {checks.map((c, i) => {
             const cfg = c.status === 'err'
               ? { ico: '✕', icoBg: 'var(--red-bg)',   icoColor: 'var(--red)',   border: 'var(--red)',   titleColor: 'var(--red)' }
@@ -330,7 +318,7 @@ export default function ComplianceScreen() {
             padding: 12, background: 'var(--gray1)', borderRadius: 8,
           }}>
             셀을 <strong>클릭</strong>하면 바로 편집됩니다.<br /><br />
-            빨간 테두리 항목은 규정 위반이 감지된 항목입니다.
+            빨간 테두리 항목은 아직 입력하지 않은 필수 항목입니다.
           </div>
         </div>
 

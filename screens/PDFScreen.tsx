@@ -39,6 +39,10 @@ export default function PDFScreen() {
   // #3 연속 작성: 업로드한 증빙 큐에서 현재 위치 (여러 건 업로드 시에만 사용)
   const [queuePos, setQueuePos] = useState<{ index: number; total: number } | null>(null);
 
+  // 실제로 확인 가능한 항목만 요약: 필수 항목 미입력 개수, 증빙서류 연결 여부
+  const [missingCount, setMissingCount] = useState(0);
+  const [hasEvidence, setHasEvidence] = useState(false);
+
   useEffect(() => {
     localStorage.setItem('lastStep', '5');
     const name = localStorage.getItem('formName');
@@ -49,6 +53,11 @@ export default function PDFScreen() {
     const filled: Record<string, string> = filledRaw ? JSON.parse(filledRaw) : {};
     const userInput: Record<string, string> = userInputRaw ? JSON.parse(userInputRaw) : {};
     const merged = { ...filled, ...userInput };
+
+    const missingRaw = localStorage.getItem('missingFields');
+    const missing: string[] = missingRaw ? JSON.parse(missingRaw) : [];
+    setMissingCount(missing.filter(k => !userInput[k]).length);
+    setHasEvidence(!!localStorage.getItem('evidenceId'));
 
     const currentName = localStorage.getItem('formName') ?? '';
     let total = 0;
@@ -228,19 +237,23 @@ export default function PDFScreen() {
       <div style={{
         display: 'flex', alignItems: 'center', gap: 12,
         padding: '14px 18px',
-        background: 'var(--green-bg)', borderRadius: 10,
-        border: '1px solid rgba(58,138,92,0.18)', marginBottom: 24,
+        background: missingCount === 0 ? 'var(--green-bg)' : 'var(--amber-bg)', borderRadius: 10,
+        border: missingCount === 0 ? '1px solid rgba(58,138,92,0.18)' : '1px solid var(--amber)', marginBottom: 24,
       }}>
         <div style={{
           width: 28, height: 28, borderRadius: '50%',
-          background: 'var(--green)', color: '#fff',
+          background: missingCount === 0 ? 'var(--green)' : 'var(--amber)', color: '#fff',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 14, fontWeight: 700, flexShrink: 0,
-        }}>✓</div>
+        }}>{missingCount === 0 ? '✓' : '!'}</div>
         <div>
-          <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--green)' }}>모든 규정 검사 통과</div>
+          <div style={{ fontSize: 14, fontWeight: 700, color: missingCount === 0 ? 'var(--green)' : 'var(--amber)' }}>
+            {missingCount === 0 ? '필수 항목 입력 완료' : `필수 항목 ${missingCount}개 미입력`}
+          </div>
           <div style={{ fontSize: 11, color: 'var(--gray5)' }}>
-            최종 문서가 준비되었습니다. 아래에서 저장 방법을 선택하세요.
+            {missingCount === 0
+              ? '최종 문서가 준비되었습니다. 아래에서 저장 방법을 선택하세요.'
+              : '이전 단계에서 비어 있는 필수 항목을 입력하면 더 완성된 문서를 만들 수 있습니다.'}
           </div>
         </div>
       </div>
@@ -265,7 +278,7 @@ export default function PDFScreen() {
                 display: 'inline-flex', alignItems: 'center', gap: 3,
                 fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100,
                 background: 'var(--green-bg)', color: 'var(--green)',
-              }}>규정 검사 완료</span>
+              }}>필수 항목 검사 완료</span>
               최종본 준비됨
             </div>
             <div style={{
@@ -437,22 +450,14 @@ export default function PDFScreen() {
               fontSize: 13, fontWeight: 700, color: 'var(--navy)', marginBottom: 12,
             }}>
               최종 검토 요약
-              <span style={{
-                display: 'inline-flex', alignItems: 'center', gap: 3,
-                fontSize: 10, fontWeight: 700, padding: '2px 8px', borderRadius: 100,
-                background: 'var(--green-bg)', color: 'var(--green)',
-                marginLeft: 6,
-              }}>통과</span>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {[
-                '한도 규정 준수',
-                '증빙 자료 첨부 완료',
-                '필수 항목 입력 완료',
-                '결재 라인 설정 완료',
-              ].map(t => (
+                { ok: hasEvidence, t: hasEvidence ? '증빙서류 연결됨' : '증빙서류 없음' },
+                { ok: missingCount === 0, t: missingCount === 0 ? '필수 항목 입력 완료' : `필수 항목 ${missingCount}개 미입력` },
+              ].map(({ ok, t }) => (
                 <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 12 }}>
-                  <span style={{ color: 'var(--green)', fontWeight: 700 }}>✓</span>
+                  <span style={{ color: ok ? 'var(--green)' : 'var(--amber)', fontWeight: 700 }}>{ok ? '✓' : '!'}</span>
                   <span style={{ color: 'var(--gray5)' }}>{t}</span>
                 </div>
               ))}

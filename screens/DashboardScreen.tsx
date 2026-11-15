@@ -153,7 +153,7 @@ function DirMonth({ year, month, open: initOpen, files }: MonthData) {
             fontSize: 9, fontWeight: 700, padding: '2px 6px', borderRadius: 3, flexShrink: 0,
             background: STATUS_BG[f.status], color: STATUS_COLORS[f.status],
           }}>
-            {f.status === 'ok' ? '통과' : f.status === 'warn' ? '주의' : '위반'}
+            {f.status === 'ok' ? '승인' : f.status === 'warn' ? '진행 중' : '반려·취소'}
           </span>
         </div>
       ))}
@@ -172,6 +172,8 @@ export default function DashboardScreen({ onNew }: DashboardScreenProps) {
   const [submissions, setSubmissions] = useState<Submission[]>(MOCK_SUBMISSIONS);
   const [counts, setCounts] = useState<{ review: number; approved: number; rejected: number }>({ review: 1, approved: 3, rejected: 1 });
   const [hasPolicies, setHasPolicies] = useState(false);
+  // 이번 달 결재 완료(승인+반려) 건수 — 0건이면 승인율을 "—"로 표시 (백엔드는 0건일 때 100을 돌려줌)
+  const [monthDecided, setMonthDecided] = useState<number | null>(null);
 
   useEffect(() => {
     const el = dashRef.current;
@@ -211,6 +213,10 @@ export default function DashboardScreen({ onNew }: DashboardScreenProps) {
           })),
         }));
         setMonths(mapped);
+        // 요약 지표와 같은 기준(결재 요청 생성 월)으로 이번 달 승인·반려 건수 계산
+        const now = new Date();
+        const cur = data.find(m => m.year === now.getFullYear() && m.month === now.getMonth() + 1);
+        setMonthDecided(cur ? cur.files.filter(f => f.status === 'APPROVED' || f.status === 'REJECTED').length : 0);
       })
       .catch(() => { /* 모킹 폴백 유지 */ });
 
@@ -316,8 +322,8 @@ export default function DashboardScreen({ onNew }: DashboardScreenProps) {
             AI 기반 지출결의의<br />자동화의 정석, 가결
           </h1>
           <p style={{ fontSize: 13, color: 'var(--gray5)', lineHeight: 1.85, marginBottom: 32 }}>
-            복잡한 기업 지출 증빙과 규정 준수 확인,<br />
-            이제 AI가 실시간으로 분석하고 자동으로 처리합니다.
+            영수증 한 장으로 양식 작성부터 결재까지,<br />
+            AI가 증빙을 읽고 양식을 자동으로 채웁니다.
           </p>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <button style={{
@@ -475,18 +481,20 @@ export default function DashboardScreen({ onNew }: DashboardScreenProps) {
                   color: 'var(--amber)',
                 },
                 {
-                  label: '규정 준수율 평균',
-                  value: `${summary.complianceRate}%`,
-                  foot: '통과 기준 80% 이상',
+                  // 백엔드 complianceRate = 이번 달 승인 ÷ (승인 + 반려). 규정 준수 판정값이 아님.
+                  label: '이번 달 결재 승인율',
+                  value: monthDecided ? `${summary.complianceRate}%` : '—',
+                  foot: '승인 ÷ (승인 + 반려) 기준',
                   color: 'var(--green)',
                 },
               ];
             }
+            // 요약 데이터를 불러오기 전/실패 시: 가짜 수치 대신 빈 값 표시
             return [
-              { label: '이번 달 제출 건수', value: '12건', foot: '전월 대비 +3건' },
-              { label: '이번 달 총 금액', value: '4,250,000원', foot: '전월 3,980,000원' },
-              { label: '처리 중', value: '3건', foot: '평균 대기 2.4일', color: 'var(--amber)' },
-              { label: '규정 준수율 평균', value: '84%', foot: '통과 기준 80% 이상', color: 'var(--green)' },
+              { label: '이번 달 제출 건수', value: '—', foot: '불러오는 중' },
+              { label: '이번 달 총 금액', value: '—', foot: '불러오는 중' },
+              { label: '처리 중', value: '—', foot: '불러오는 중', color: 'var(--amber)' },
+              { label: '이번 달 결재 승인율', value: '—', foot: '승인 ÷ (승인 + 반려) 기준', color: 'var(--green)' },
             ];
           })().map(k => (
             <div key={k.label} style={{

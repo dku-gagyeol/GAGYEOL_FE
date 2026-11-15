@@ -4,7 +4,7 @@ import React, { Fragment } from 'react';
 import { useRouter } from 'next/navigation';
 
 export const STEPS = [
-  '증빙 업로드', '양식 추천', '초안 확인·수정', '규정 검토', '문서 저장',
+  '증빙 업로드', '양식 추천', '초안 확인·수정', '필수 항목 검사', '문서 저장',
 ];
 
 interface StepNavProps {

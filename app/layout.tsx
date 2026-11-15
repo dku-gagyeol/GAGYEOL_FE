@@ -18,7 +18,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: 'GAGYEOL — AI 지출결의',
-  description: 'AI 기반 지출결의 및 규정 준수 자동화 시스템',
+  description: '증빙 기반 양식 자동 작성, 필수 항목 검사, 다단계 결재를 지원하는 AI 지출결의 서비스',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
